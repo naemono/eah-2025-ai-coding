@@ -5,6 +5,7 @@
   min-height: 100vh;
   color: #fff;
   font-family: 'Segoe UI', sans-serif;
+  position: relative;
 }
 
 h1 {
@@ -170,4 +171,66 @@ h1 {
   to {
     transform: rotate(360deg);
   }
+}
+
+.leaderboard {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  background: #232b36ee;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #0007;
+  padding: 18px 24px 14px 24px;
+  min-width: 200px;
+  z-index: 10;
+  color: #fff;
+  text-align: left;
+}
+
+.leaderboard h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  color: #f9d923;
+}
+
+.leaderboard ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.leaderboard li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.lb-rank {
+  font-weight: bold;
+  color: #2ecc40;
+  min-width: 22px;
+}
+
+.lb-name {
+  flex: 1;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-chips {
+  color: #f9d923;
+  font-size: 0.98rem;
+}
+
+.lb-loading,
+.lb-error {
+  color: #f9d923;
+  font-size: 0.98rem;
+  margin-top: 6px;
 }
