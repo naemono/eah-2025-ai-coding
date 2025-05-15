@@ -45,16 +45,40 @@ class BlackjackProtocolClient {
     this.ws.onerror = () => { if (this.onClose) this.onClose(); };
   }
 
-  handleMessage(data: string) {
-    if (this.onMessage) this.onMessage(data);
-    if (data.includes('AWAITING INPUT')) {
-      this.awaitingInput = true;
+  handleMessage(data: any) {
+    // If data is a WebSocket event, extract .data
+    if (data && data.data !== undefined) {
+      data = data.data;
+    }
+
+    if (typeof data === 'string') {
+      if (this.onMessage) this.onMessage(data);
+      if (data.includes('AWAITING INPUT')) {
+        this.awaitingInput = true;
+      }
+    } else if (data instanceof Blob) {
+      // Convert Blob to string
+      data.text().then((text: string) => {
+        if (this.onMessage) this.onMessage(text);
+        if (text.includes('AWAITING INPUT')) {
+          this.awaitingInput = true;
+        }
+      });
+    } else {
+      console.warn('handleMessage: data is not a string or Blob:', data, 'Type:', typeof data);
+      const str = String(data);
+      if (this.onMessage) this.onMessage(str);
+      if (str.includes('AWAITING INPUT')) {
+        this.awaitingInput = true;
+      }
     }
   }
 
   send(cmd: string) {
     if (this.ws && this.awaitingInput) {
-      this.ws.send(cmd + '\n');
+      // Send as binary (ArrayBuffer) for websockify compatibility
+      const encoder = new TextEncoder();
+      this.ws.send(encoder.encode(cmd + '\n'));
       this.awaitingInput = false;
     }
   }
@@ -174,7 +198,12 @@ function App() {
     if (keepAliveInterval.current) clearInterval(keepAliveInterval.current);
   }
 
-  function handleProtocolMessage(msg: string) {
+  function handleProtocolMessage(msg: any) {
+    // Ensure msg is a string
+    if (typeof msg !== 'string') {
+      console.warn('Protocol message is not a string:', msg, 'Type:', typeof msg);
+      msg = String(msg);
+    }
     setLastRawMsg(msg);
     console.debug('Protocol message:', msg);
     // Parse protocol messages and update state
